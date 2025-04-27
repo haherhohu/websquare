@@ -1,0 +1,126 @@
+{
+  "name": "websquare",
+  "displayName": "websquare",
+  "description": "websquare xml file to convert js",
+  "version": "0.0.4",
+  "engines": {
+    "vscode": "^1.98.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "pricing": "Free",
+  "icon": "iwb_W128128.png",
+  "publisher": "haherhohu",
+  "activationEvents": [
+    "onLangiuage:xml"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "websquare",
+      "type": "object",
+      "properties": {
+        "websquare.websquareSource": {
+          "type": "string",
+          "default": "src/main/webapp/",
+          "description": "source of websquare directory for convert All"
+        },
+        "websquare.websquareBase": {
+          "type": "string",
+          "default": "src/main/webapp/",
+          "description": "base of websquare directory for convert"
+        },
+        "websquare.deployName": {
+          "type": "string",
+          "default": "",
+          "description": "deployment name"
+        },
+        "websquare.removeDebuggingCode": {
+          "type": "boolean",
+          "default": false,
+          "description": "remove javascript debugging code when converting",
+          "enumDescriptions": [
+            {
+              "false": "do not remove debugging code"
+            },
+            {
+              "true": "remove debugging code"
+            }
+          ]
+        },
+        "websquare.minifyJS": {
+          "type": "string",
+          "default": "none",
+          "enum": [
+            "none",
+            "normal",
+            "high"
+          ],
+          "description": "converting minify level for javascript",
+          "enumDescriptions": [
+            {
+              "none": "no minify"
+            },
+            {
+              "medium": "remove comments and spacaces"
+            },
+            {
+              "high": "remove comments, spaces and change local variable names"
+            }
+          ]
+        },
+        "websquare.minifyCSS": {
+          "type": "boolean",
+          "default": false,
+          "description": "converting minify level for css",
+          "enumDescriptions": [
+            {
+              "false": "no minify"
+            },
+            {
+              "true": "remove comments and spacaces and change RGB to Hex code"
+            }
+          ]
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "websquare.convert",
+        "title": "Convert Websquare XML to JS"
+      },
+      {
+        "command": "websquare.convert_and_deploy",
+        "title": "Convert Websquare XML to JS and Deploy to Target"
+      },
+      {
+        "command": "websquare.convert_all",
+        "title": "Convert All Websquare XML in Workspace to JS "
+      },
+      {
+        "command": "websquare.convert_all_and_deploy",
+        "title": "Convert All Websquare XML in Workspace to JS and Deploy to Target"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.98.0",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
+    "@typescript-eslint/parser": "^8.28.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.23.0",
+    "typescript": "^5.8.2"
+  }
+}
