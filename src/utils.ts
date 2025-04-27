@@ -71,17 +71,31 @@ export const makeConvertCommand = (source: string, target: string, base: string)
     return `"${selectExecutable()} -s '${normalizedSource}' -d '${normalizedTarget}' -b '${normalizedBase}' -j ${minifyJS} -c ${minifyCSS} -nd ${removeDebuggingCode}"`;
 };
 
-// absolute path
-// source src/main/webapp/wq
-// target src/main/webapp/_wpack_/
-// base   src/main/webapp/
-export const makeCleanCommand = (source: string, target: string, base: string) => {
-    const relativeSourcePath = source.replace(base, '');
+// delete single file 
+export const makeRemoveCommand = (source: string, target: string, base: string) => {
+    const relativeSourcePath = source.replace(base, '').replace(".xml", ".js");
 
     // Normalize the path for the current OS
     const normalizedRemoveTargetPath = path.normalize(path.join(target, relativeSourcePath));
 
     return `"rm -rf '${normalizedRemoveTargetPath}'"`;
+};
+
+
+// absolute path
+// source src/main/webapp/wq
+// target src/main/webapp/_wpack_/
+// base   src/main/webapp/
+
+// delete all files
+export const makeRemoveAllCommand = (source: string, target: string, base: string) => {
+    const relativeSourcePath = source.replace(base, '');
+
+    // Normalize the path for the current OS
+    const normalizedRemoveTargetPath = path.normalize(path.join(target, relativeSourcePath));
+
+    // remove websquare *.js(output) files only    
+    return `"find '${normalizedRemoveTargetPath}' -name '*.js' -exec rm -rf {} \\;"`;
 };
 
 export const makeDeployCommand = (source: string, target: string, base: string, deployName: string) => {
