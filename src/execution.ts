@@ -5,7 +5,8 @@ import { spawn, ExecException } from 'child_process';
 
 import {
 	makeConvertCommand,
-	makeCleanCommand,
+    makeRemoveCommand,
+	makeRemoveAllCommand,
 	makeDeployCommand,
 } from './utils';
 
@@ -75,6 +76,7 @@ export const runCommand = (command: string, cwd: string) => {
 };
 
 // run websquare converter command
+// single file
 export const runConverter = async (websquareFilePath: string, dodeploy : boolean = true) => {
     outputChannel.appendLine(`Running converter for file: ${websquareFilePath}`);
 
@@ -84,7 +86,7 @@ export const runConverter = async (websquareFilePath: string, dodeploy : boolean
         // target src/main/webapp/_wpack_/
         // base   src/main/webapp/
         outputChannel.appendLine(`Cleaning target directory: ${target}`);
-        const clean = makeCleanCommand(websquareFilePath, target, base);
+        const clean = makeRemoveCommand(websquareFilePath, target, base);
         outputChannel.appendLine(`Executing clean command: ${clean}`);
 
         await runCommandWithRealtimeOutput(shell, [shellopt, clean], extensionHome );
@@ -112,6 +114,7 @@ export const runConverter = async (websquareFilePath: string, dodeploy : boolean
     }
 };
 
+// multiple files
 export const runConverterWithProgress = async (websquareFilePath: string, dodeploy: boolean = true) => {
     await vscode.window.withProgress(
         {
@@ -123,7 +126,7 @@ export const runConverterWithProgress = async (websquareFilePath: string, dodepl
             progress.report({ message: 'Cleaning target files...' });
 
             // Clean target file
-            const clean = makeCleanCommand(websquareFilePath, target, base);
+            const clean = makeRemoveAllCommand(websquareFilePath, target, base);
             outputChannel.appendLine(`Executing clean command: ${clean}`);
             await runCommandWithRealtimeOutput(shell, [shellopt, clean], extensionHome );
 
