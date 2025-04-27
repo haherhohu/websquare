@@ -42,22 +42,21 @@ export const isWebsquareFile = (doc: vscode.TextDocument) => {
 
 export const selectExecutable = (): string => {
     const osType = os.platform();
+    const linuxexec = 'standalone_wpack-linux';
 
-    const win = path.join(extensionHome || '', 'w-pack', 'standalone_wpack-win.exe');
-    const mac = path.join(extensionHome || '', 'w-pack', 'standalone_wpack-macos');
-    const linux = path.join(extensionHome || '', 'w-pack', 'standalone_wpack-linux');
-
-    if (osType === 'win32') {
-        // Normalize the Windows path and replace backslashes with forward slashes
-        return win.replace(/\\/g, '/').replace(':', '');
-    } else if (osType === 'darwin') {
-        return mac;
-    } else if (osType === 'linux') {
-        return linux;
-    } else {
-        console.log(`Unknown OS: ${osType}`);
-        return linux; // Default to Linux
-    }
+    return path.normalize( (() => {
+        switch(osType){
+            case 'win32':
+                // windows bash can't add root(/)
+                return path.join(extensionHome, 'w-pack', 'standalone_wpack-win.exe');
+            case 'darwin':
+                return path.join(extensionHome, 'w-pack', 'standalone_wpack-macos');
+            case 'linux':
+                return path.join(extensionHome, 'w-pack', linuxexec);
+            default:
+                console.log(`Unknown OS: ${osType}`);
+                return path.join(extensionHome, 'w-pack', linuxexec); // Default to Linux
+        }} )() );
 };
 
 export const makeConvertCommand = (source: string, target: string, base: string) => {
@@ -68,7 +67,7 @@ export const makeConvertCommand = (source: string, target: string, base: string)
     const normalizedTarget = path.normalize(target); // base + '_wpack_'
     const normalizedBase = path.normalize(base); // base
 
-    return `"${selectExecutable()} -s '${normalizedSource}' -d '${normalizedTarget}' -b '${normalizedBase}' -j ${minifyJS} -c ${minifyCSS} -nd ${removeDebuggingCode}"`;
+    return `"'${selectExecutable()}' -s '${normalizedSource}' -d '${normalizedTarget}' -b '${normalizedBase}' -j ${minifyJS} -c ${minifyCSS} -nd ${removeDebuggingCode}"`;
 };
 
 // absolute path
@@ -81,7 +80,13 @@ export const makeCleanCommand = (source: string, target: string, base: string) =
     // Normalize the path for the current OS
     const normalizedRemoveTargetPath = path.normalize(path.join(target, relativeSourcePath));
 
-    return `"rm -rf '${normalizedRemoveTargetPath}'"`;
+    //return `"rm -rf '${normalizedRemoveTargetPath}'"`;
+    if (os.platform() === 'win32') {
+        return `"del /s /q '${normalizedRemoveTargetPath}'"`;
+    } else
+    {
+        return `"rm -rf '${normalizedRemoveTargetPath}'"`;
+    }
 };
 
 export const makeDeployCommand = (source: string, target: string, base: string, deployName: string) => {
@@ -91,6 +96,11 @@ export const makeDeployCommand = (source: string, target: string, base: string, 
     const normalizedDeploySourcePath = path.normalize(path.join(target, relativeSourcePath));
     const normalizedDeployTargetPath = path.normalize(path.join(base, "target", deployName, "_wpack_", relativeSourcePath));
 
-    return `"cp -f '${normalizedDeploySourcePath}' '${normalizedDeployTargetPath}'"`;
+    if (os.platform() === 'win32') {
+        return `"copy /y '${normalizedDeploySourcePath}' '${normalizedDeployTargetPath}'"`;
+    } else
+    {
+        return `"cp -f '${normalizedDeploySourcePath}' '${normalizedDeployTargetPath}'"`;
+    }
 };
 

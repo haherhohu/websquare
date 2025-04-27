@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as os from 'os';
+
 import { spawn, ExecException } from 'child_process';
 
 import {
@@ -16,6 +18,8 @@ const base = configurationManager.getWebsquareBase(); // src/main/webapp/
 const target = path.join(base, '_wpack_/'); // src/main/webapp/_wpack_/
 const extensionHome = configurationManager.getExtensionHome();
 const deployName = configurationManager.getDeployName();
+const shell = os.platform() === 'win32' ? 'cmd.exe' : 'sh';
+const shellopt = os.platform() === 'win32' ? '/c' : '-c';
 
 export const setOutputChannel = (outputChannel: vscode.OutputChannel) => {
     outputChannel = outputChannel;
@@ -67,7 +71,7 @@ export const runCommandWithRealtimeOutput = (command: string, args: string[], cw
 // TODO: test
 export const runCommand = (command: string, cwd: string) => {
     outputChannel.appendLine(`Executing command: ${command}`);
-    return runCommandWithRealtimeOutput('sh', ['-c', command], cwd );
+    return runCommandWithRealtimeOutput(shell, [shellopt, command], cwd );
 };
 
 // run websquare converter command
@@ -82,12 +86,13 @@ export const runConverter = async (websquareFilePath: string, dodeploy : boolean
         outputChannel.appendLine(`Cleaning target directory: ${target}`);
         const clean = makeCleanCommand(websquareFilePath, target, base);
         outputChannel.appendLine(`Executing clean command: ${clean}`);
-        await runCommandWithRealtimeOutput('sh', ['-c', clean], extensionHome );
+
+        await runCommandWithRealtimeOutput(shell, [shellopt, clean], extensionHome );
 
         // Execute a shell command in the extension directory
         const convert = makeConvertCommand(websquareFilePath, target, base);
         outputChannel.appendLine(`Executing conversion command: ${convert}`);
-        await runCommandWithRealtimeOutput('sh', ['-c', convert], extensionHome );
+        await runCommandWithRealtimeOutput(shell, [shellopt, convert], extensionHome );
         
         // deploy command
         if(dodeploy) {
@@ -98,7 +103,7 @@ export const runConverter = async (websquareFilePath: string, dodeploy : boolean
             }
             const deploy = makeDeployCommand(websquareFilePath, target, workspaceHome, deployName);			
             outputChannel.appendLine(`Executing deploy command: ${deploy}`);
-            await runCommandWithRealtimeOutput('sh', ['-c', deploy], extensionHome );
+            await runCommandWithRealtimeOutput(shell, [shellopt, deploy], extensionHome );
         }
         vscode.window.showInformationMessage('Process complete!');
     } catch (error) {
@@ -120,14 +125,14 @@ export const runConverterWithProgress = async (websquareFilePath: string, dodepl
             // Clean target file
             const clean = makeCleanCommand(websquareFilePath, target, base);
             outputChannel.appendLine(`Executing clean command: ${clean}`);
-            await runCommandWithRealtimeOutput('sh', ['-c', clean], extensionHome );
+            await runCommandWithRealtimeOutput(shell, [shellopt, clean], extensionHome );
 
             progress.report({ message: 'Converting files...' });
 
             // Convert file
             const convert = makeConvertCommand(websquareFilePath, target, base);
             outputChannel.appendLine(`Executing conversion command: ${convert}`);
-            await runCommandWithRealtimeOutput('sh', ['-c', convert], extensionHome );
+            await runCommandWithRealtimeOutput(shell, [shellopt, convert], extensionHome );
 
             if (dodeploy) {
                 progress.report({ message: 'Deploying files...' });
@@ -140,7 +145,7 @@ export const runConverterWithProgress = async (websquareFilePath: string, dodepl
                 // Deploy file
                 const deploy = makeDeployCommand(websquareFilePath, target, workspaceHome, deployName);
                 outputChannel.appendLine(`Executing deploy command: ${deploy}`);
-                await runCommandWithRealtimeOutput('sh', ['-c', deploy], extensionHome );
+                await runCommandWithRealtimeOutput(shell, [shellopt, deploy], extensionHome );
             }
 
             progress.report({ message: 'Process complete!' });

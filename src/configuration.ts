@@ -23,7 +23,6 @@ class ConfigurationManager {
 
     private disposables: vscode.Disposable[] = [];
 
-
     private constructor() {
         // Get the configuration object for your extension
         this.config = vscode.workspace.getConfiguration('websquare');
@@ -39,6 +38,7 @@ class ConfigurationManager {
         };
         // logging and environment variables
         this.outputChannel = vscode.window.createOutputChannel('Websquare Logs');
+        // global environment variables
         this.extensionHome = vscode.extensions.getExtension('haherhohu.websquare')?.extensionPath || '';
         this.workspaceHome = vscode.workspace.workspaceFolders?.[0].uri.path || '';
 
@@ -88,7 +88,9 @@ class ConfigurationManager {
     }
 
     public getExtensionHome(): string {
-        return this.extensionHome;
+        let home = this.extensionHome;
+        if (!home.startsWith('/') || !home.startsWith('\\' )){ home = '\\' + home; }
+        return home;
     }
 
     public getWorkspaceHome(): string {

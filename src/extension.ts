@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import path from 'path';
 
 import {
 	getCurrentDocument,
@@ -31,7 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// start command registration
 	const convert = vscode.commands.registerCommand('websquare.convert', async () => {
-		const websquareFilePath = getCurrentDocument();
+		const websquareFilePath = path.normalize(getCurrentDocument()||'');
 
 		// error handling
 		if (!websquareFilePath) { 
@@ -44,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	const convertanddeploy = vscode.commands.registerCommand('websquare.convert_and_deploy', async () => {
-		const websquareFilePath = getCurrentDocument();
+		const websquareFilePath = path.normalize(getCurrentDocument()||'');
 
 		// error handling
 		if (!websquareFilePath) { 
