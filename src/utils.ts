@@ -4,6 +4,7 @@ import * as os from 'os';
 
 import { configurationManager } from './configuration';
 
+// get configuration values
 const extensionHome = configurationManager.getExtensionHome();
 const removeDebuggingCode = configurationManager.getRemoveDebuggingCode();
 const minifyJS = configurationManager.getMinifyJS();
@@ -20,7 +21,7 @@ export const getDocument = (): vscode.TextDocument | null => {
     return null;
 };
 
-    // get the current document
+// get the current document
 export const getCurrentDocument = ()=> {
     const document = getDocument();
     
@@ -29,7 +30,7 @@ export const getCurrentDocument = ()=> {
     }
 
     // Get the file path of the document
-    return document.uri.path;
+    return path.normalize(document.uri.path);
 };
 
 export const isWebsquareFile = (doc: vscode.TextDocument) => {
@@ -39,7 +40,6 @@ export const isWebsquareFile = (doc: vscode.TextDocument) => {
             || doc.getText().includes('xmlns:w2="http://www.inswave.com/websquare');
 };
 
-
 export const selectExecutable = (): string => {
     const osType = os.platform();
     const linuxexec = 'standalone_wpack-linux';
@@ -47,7 +47,6 @@ export const selectExecutable = (): string => {
     return path.normalize( (() => {
         switch(osType){
             case 'win32':
-                // windows bash can't add root(/)
                 return path.join(extensionHome, 'w-pack', 'standalone_wpack-win.exe');
             case 'darwin':
                 return path.join(extensionHome, 'w-pack', 'standalone_wpack-macos');
@@ -59,6 +58,21 @@ export const selectExecutable = (): string => {
         }} )() );
 };
 
+// command wrapper
+export const wrapConvertCommand = (args: string[]) => {
+    return makeConvertCommand(args[0], args[1], args[2]);
+};
+export const wrapRemoveCommand = (args: string[]) => {
+    return makeRemoveCommand(args[0], args[1], args[2]);
+};
+export const wrapRemoveAllCommand = (args: string[]) => {
+    return makeRemoveAllCommand(args[0], args[1], args[2]);
+};
+export const wrapDeployCommand = (args: string[]) => {
+    return makeDeployCommand(args[0], args[1], args[2], args[3]);
+};
+
+// command generator
 export const makeConvertCommand = (source: string, target: string, base: string) => {
 
     //, nodebug: string, jsminify: number, cssminify: number 
@@ -85,7 +99,6 @@ export const makeRemoveCommand = (source: string, target: string, base: string) 
         return `"rm -rf '${normalizedRemoveTargetPath}'"`;
     }
 };
-
 
 // absolute path
 // source src/main/webapp/wq

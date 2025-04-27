@@ -1,5 +1,6 @@
 import path from 'path';
 import * as vscode from 'vscode';
+import * as os from 'os';
 
 class ConfigurationManager {
     private static instance: ConfigurationManager;
@@ -88,9 +89,13 @@ class ConfigurationManager {
     }
 
     public getExtensionHome(): string {
-        let home = this.extensionHome;
-        if (!home.startsWith('/') || !home.startsWith('\\' )){ home = '\\' + home; }
-        return home;
+        if(os.platform() === 'win32'){
+            // win32 path normalization for root path
+            let home = this.extensionHome;
+            if (!home.startsWith('/') || !home.startsWith('\\' )){ home = '\\' + home; }
+            return home;
+        }
+        return this.extensionHome;
     }
 
     public getWorkspaceHome(): string {

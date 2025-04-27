@@ -8,7 +8,6 @@ import {
 } from './utils';
 
 import {
-	runConverter,
 	runConverterWithProgress,
 } from './execution';
 
@@ -29,10 +28,22 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-
+	
 	// start command registration
 	const convert = vscode.commands.registerCommand('websquare.convert', async () => {
-		const websquareFilePath = path.normalize(getCurrentDocument()||'');
+		const websquareFilePath = getCurrentDocument();
+
+		if (!websquareFilePath) { 
+			vscode.window.showErrorMessage('This command can only be used in XML files.');
+            outputChannel.appendLine('Error: No valid XML file selected.');
+			return; 
+		}
+        outputChannel.appendLine(`Executing "websquare.convert" for file: ${websquareFilePath}`);
+		runConverterWithProgress(websquareFilePath, false);
+	});
+
+	const convertanddeploy = vscode.commands.registerCommand('websquare.convert_and_deploy', async () => {
+		const websquareFilePath = getCurrentDocument();
 
 		// error handling
 		if (!websquareFilePath) { 
@@ -41,20 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
 			return; 
 		}
         outputChannel.appendLine(`Executing "websquare.convert_and_deploy" for file: ${websquareFilePath}`);
-		runConverter(websquareFilePath, false);
-	});
-
-	const convertanddeploy = vscode.commands.registerCommand('websquare.convert_and_deploy', async () => {
-		const websquareFilePath = path.normalize(getCurrentDocument()||'');
-
-		// error handling
-		if (!websquareFilePath) { 
-			vscode.window.showErrorMessage('This command can only be used in XML files.');
-            outputChannel.appendLine('Error: No valid XML file selected.');
-			return; 
-		}
-        outputChannel.appendLine(`Executing "websquare.convert" for file: ${websquareFilePath}`);
-		runConverter(websquareFilePath);
+		runConverterWithProgress(websquareFilePath);
 	});
 
 	const convertall = vscode.commands.registerCommand('websquare.convert_all', async () => {
@@ -65,6 +63,7 @@ export function activate(context: vscode.ExtensionContext) {
 		runConverterWithProgress(source);
 	});
 
+	// Register the commands
 	context.subscriptions.push(convert);
 	context.subscriptions.push(convertanddeploy);
 	context.subscriptions.push(convertall);
