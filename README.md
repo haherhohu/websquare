@@ -23,10 +23,11 @@ This is an wrapper of "websquare" for make ui on vscode.
 
 ## Release Notes
 
-### 0.0.4
+### 0.0.5
 
-- Add more settings for websquare source, target, base dir.
-- Add more converting optons for debugging, minify.
+- Fix websqaure clean error. Just remove generated files only.
+- Tested on windows. (but not fully working.)
+  - shell command (find, cp, rm) isn't working on cmd
 
 ## License
 

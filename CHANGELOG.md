@@ -4,6 +4,17 @@ All notable changes to the "websquare" extension will be documented in this file
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.0.5]
+
+- Fix websqaure clean error. Just remove generated files only.
+  - single file clean now working (previously, it targets on .xml, now it targets on .js)
+  - solve multiple file convert cleaning original(.xml) directory problem.
+  - now remove just generated(.js) file only.
+- Tested on windows. (but not fully working.)
+  - shell command (find, cp, rm) isn't working on cmd
+  - converting command is working.
+  - but clean, publishing isn't working because it runs cmd shell on windows.
+
 ## [0.0.4]
 
 - Add more settings for websquare source, target, base dir.
