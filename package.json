@@ -2,7 +2,7 @@
   "name": "websquare",
   "displayName": "websquare",
   "description": "websquare xml file to convert js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "engines": {
     "vscode": "^1.98.0"
   },
@@ -122,8 +122,5 @@
     "@vscode/test-electron": "^2.4.1",
     "eslint": "^9.23.0",
     "typescript": "^5.8.2"
-  },
-  "dependencies": {
-    "websquare": "file:"
   }
 }
