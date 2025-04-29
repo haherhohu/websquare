@@ -74,10 +74,10 @@ export const runCommandWithRealtimeOutput = (command: string, args: string[], cw
 };
 
 // command shortcut
-export const runCommand = (commandMaker: Function, args: string[], cwd: string) => {
+export const runCommand = async (commandMaker: Function, args: string[], cwd: string) => {
     const cmd = commandMaker(args);
     outputChannel.appendLine(`Executing command: ${cmd}`);
-    runCommandWithRealtimeOutput(shell, [shellopt, cmd], cwd );
+    await runCommandWithRealtimeOutput(shell, [shellopt, cmd], cwd );
 };
 
 export const checkDeployName = (deployName: string) => {
@@ -88,22 +88,22 @@ export const checkDeployName = (deployName: string) => {
 };
 
 // run websquare converter command
-export const runConverterWithProgress = async (websquareFilePath: string, dodeploy: boolean = true) => {
+export const runConverterWithProgress = (websquareFilePath: string, dodeploy: boolean = true) => {
 
     const isSingleFile = (websquareFilePath.endsWith('.xml'));
     
-    await vscode.window.withProgress(
+    vscode.window.withProgress(
         {
             location: vscode.ProgressLocation.Notification, // Show in the notification area
             title: 'Running Websquare Converter: ', // Title of the progress bar
             cancellable: false, // Make it non-cancellable
         },
         async (progress) => {
-            if(isSingleFile){
-                outputChannel.appendLine(`Running converter for file: ${websquareFilePath}`);
-            }
-
             try {
+                if(isSingleFile){
+                    outputChannel.appendLine(`Running converter for file: ${websquareFilePath}`);
+                }
+                
                 // source src/main/webapp/wq
                 // target src/main/webapp/_wpack_/
                 // base   src/main/webapp/

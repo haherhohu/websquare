@@ -23,11 +23,12 @@ This is an wrapper of "websquare" for make ui on vscode.
 
 ## Release Notes
 
-### 0.0.5
+### 0.0.6
 
+- (HOTFIX) Convert All commands do not work properly.
 - Fix websqaure clean error. Just remove generated files only.
 - Tested on windows. (but not fully working.)
-  - shell command (find, cp, rm) isn't working on cmd
+  - add windows cmd command (del, copy, del /s)
 
 ## License
 

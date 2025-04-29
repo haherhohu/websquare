@@ -91,13 +91,13 @@ export const makeRemoveCommand = (source: string, target: string, base: string) 
     // Normalize the path for the current OS
     const normalizedRemoveTargetPath = path.normalize(path.join(target, relativeSourcePath));
 
-    return `"rm -rf '${normalizedRemoveTargetPath}'"`;
-    // if (os.platform() === 'win32') {
-    //     return `"del /s /q '${normalizedRemoveTargetPath}'"`;
-    // } else
-    // {
-    //     return `"rm -rf '${normalizedRemoveTargetPath}'"`;
-    // }
+    //return `"rm -rf '${normalizedRemoveTargetPath}'"`;
+    if (os.platform() === 'win32') {
+        return `"del /q '${normalizedRemoveTargetPath}'"`;
+    } 
+    else{
+        return `"rm -rf '${normalizedRemoveTargetPath}'"`;
+    }
 };
 
 // absolute path
@@ -113,7 +113,12 @@ export const makeRemoveAllCommand = (source: string, target: string, base: strin
     const normalizedRemoveTargetPath = path.normalize(path.join(target, relativeSourcePath));
 
     // remove websquare *.js(output) files only    
-    return `"find '${normalizedRemoveTargetPath}' -name '*.js' -exec rm -rf {} \\;"`;
+    if (os.platform() === 'win32') {
+        return `"del /s /q '${normalizedRemoveTargetPath}\\*.js'"`;
+    }
+    else {
+        return `"find '${normalizedRemoveTargetPath}' -name '*.js' -exec rm -rf {} \\;"`;
+    }
 };
 
 export const makeDeployCommand = (source: string, target: string, base: string, deployName: string) => {
@@ -123,12 +128,12 @@ export const makeDeployCommand = (source: string, target: string, base: string, 
     const normalizedDeploySourcePath = path.normalize(path.join(target, relativeSourcePath));
     const normalizedDeployTargetPath = path.normalize(path.join(base, "target", deployName, "_wpack_", relativeSourcePath));
 
-    // if (os.platform() === 'win32') {
-    //     return `"copy /y '${normalizedDeploySourcePath}' '${normalizedDeployTargetPath}'"`;
-    // } else
-    // {
-    //     return `"cp -f '${normalizedDeploySourcePath}' '${normalizedDeployTargetPath}'"`;
-    // }
-    return `"cp -f '${normalizedDeploySourcePath}' '${normalizedDeployTargetPath}'"`;
+    if (os.platform() === 'win32') {
+        return `"copy /y '${normalizedDeploySourcePath}' '${normalizedDeployTargetPath}'"`;
+    } else
+    {
+        return `"cp -f '${normalizedDeploySourcePath}' '${normalizedDeployTargetPath}'"`;
+    }
+    //return `"cp -f '${normalizedDeploySourcePath}' '${normalizedDeployTargetPath}'"`;
 };
 

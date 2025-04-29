@@ -2,7 +2,7 @@
   "name": "websquare",
   "displayName": "websquare",
   "description": "websquare xml file to convert js",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "engines": {
     "vscode": "^1.98.0"
   },
