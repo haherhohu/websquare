@@ -76,7 +76,7 @@ export const runCommandWithRealtimeOutput = (
 
         // Handle errors
         process.on("error", (error) => {
-            outputChannel.appendLine(`${error.message}`);
+            outputChannel.appendLine(`Error: ${error.message}`);
             reject(error);
         });
     });
