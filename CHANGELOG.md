@@ -4,6 +4,16 @@ All notable changes to the "websquare" extension will be documented in this file
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.0.7]
+
+- Update Converter for Windows and tested.
+
+  - update converter commmands on windows, but normalized path isn't working on windows.
+  - change utilities command for rm, find, cp to windows command like del, copy on windows.
+  - some logging messages are changed.
+
+- Now working on windows.
+
 ## [0.0.6]
 
 - HOTFIX: Convert All proceses are asynced running. some files are deleted after generated.
