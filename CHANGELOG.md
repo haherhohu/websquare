@@ -4,6 +4,12 @@ All notable changes to the "websquare" extension will be documented in this file
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.0.8]
+
+- Update Websquare Converter Engine.
+  - 1009B.20230614 -> 12B.20250712
+  - but tested on macos.
+
 ## [0.0.7]
 
 - Update Converter for Windows and tested.

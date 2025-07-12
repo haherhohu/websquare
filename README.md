@@ -19,14 +19,19 @@ This is an wrapper of "websquare" for make ui on vscode.
 - WebsquareBase: base of websquare directory for convert. default variable is "src/main/webapp/",
 - RemoveDebuggingCode: remove javascript debugging code when converting. default variable is "false".
 - minifyJS: converting minify level for javascript.
+  - 0: no-minify
+  - 1: remove comment and spaces
+  - 2: remove comment, spaces and convert local variables
 - minifyCSS: converting minify level for css.
+  - 0: no-minify
+  - 1: "clean-css" optimize level to 1. Only apply to single property. Remove Units and change RGB Color to Hex expression and remove comments.
+  - 2: "clean-css" optimize level to 2. Remove duplicated rules and more simplify css rules if needed.
 
 ## Release Notes
 
-### 0.0.7
+### 0.0.8
 
-- Now wokring on windows.
-- Tested on windows 10
+- update websquare engine
 
 ## License
 
