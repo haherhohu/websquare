@@ -75,12 +75,12 @@ export const selectExecutable = (): string => {
 
 export const getWindowsPath = (p: string): string => {
     // Normalize the path for Windows
-    return p.replace(/\c:/, "c:");
+    return p.replace(/\c:/i, "C:");
 };
 
 export const getWindowsPathForWebsquare = (p: string): string => {
     // Normalize the path for Windows Websquare
-    return p.replaceAll(/\\/g, "/").replace(/\/c:/, "c:");
+    return p.replaceAll(/\\/g, "/").replace(/\/c:/i, "C:");
 };
 
 export const selectTerminal = (): { shell: string; opt: string } => {
