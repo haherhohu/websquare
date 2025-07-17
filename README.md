@@ -29,9 +29,9 @@ This is an wrapper of "websquare" for make ui on vscode.
 
 ## Release Notes
 
-### 0.0.8
+### 0.0.9
 
-- update websquare engine
+- fix command generater for not-working on some windows os
 
 ## License
 

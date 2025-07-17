@@ -4,6 +4,12 @@ All notable changes to the "websquare" extension will be documented in this file
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.0.9]
+
+- Update command generater.
+  - work tested on not worked windos OS.
+  - change windows command path starts from "c:" to "C:"
+
 ## [0.0.8]
 
 - Update Websquare Converter Engine.
