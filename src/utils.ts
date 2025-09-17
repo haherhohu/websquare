@@ -35,11 +35,7 @@ export const getCurrentDocument = () => {
 
 export const isWebsquareFile = (doc: vscode.TextDocument) => {
     // check xml
-    return (
-        doc.languageId === "xml" ||
-        doc.fileName.endsWith(".xml") ||
-        doc.getText().includes('xmlns:w2="http://www.inswave.com/websquare')
-    );
+    return doc.languageId === "xml" || doc.fileName.endsWith(".xml") || doc.getText().includes('xmlns:w2="http://www.inswave.com/websquare');
 };
 
 export const selectExecutable = (): string => {
@@ -50,19 +46,9 @@ export const selectExecutable = (): string => {
         (() => {
             switch (osType) {
                 case "win32":
-                    return getWindowsPath(
-                        path.join(
-                            extensionHome,
-                            "w-pack",
-                            "standalone_wpack-win.exe"
-                        )
-                    );
+                    return getWindowsPath(path.join(extensionHome, "w-pack", "standalone_wpack-win.exe"));
                 case "darwin":
-                    return path.join(
-                        extensionHome,
-                        "w-pack",
-                        "standalone_wpack-macos"
-                    );
+                    return path.join(extensionHome, "w-pack", "standalone_wpack-macos");
                 case "linux":
                     return path.join(extensionHome, "w-pack", linuxexec);
                 default:
@@ -113,12 +99,12 @@ export const wrapDeployCommand = (args: string[]) => {
     return makeDeployCommand(args[0], args[1], args[2], args[3]);
 };
 
+export const wrapCreateDirectoryCommand = (args: string[]) => {
+    return makeCreateDirectoryCommand(args[0], args[1], args[2]);
+};
+
 // command generator
-export const makeConverterCommandForWindows = (
-    source: string,
-    target: string,
-    base: string
-) => {
+export const makeConverterCommandForWindows = (source: string, target: string, base: string) => {
     // just use windows system path with slash(/)
     // windows example:
     const normalizedSource = getWindowsPathForWebsquare(source); // src
@@ -128,11 +114,7 @@ export const makeConverterCommandForWindows = (
     return `${selectExecutable()} -s "${normalizedSource}" -d "${normalizedTarget}" -b "${normalizedBase}" -j ${minifyJS} -c ${minifyCSS} -nd ${removeDebuggingCode}`;
 };
 
-export const makeConvertCommand = (
-    source: string,
-    target: string,
-    base: string
-) => {
+export const makeConvertCommand = (source: string, target: string, base: string) => {
     //, nodebug: string, jsminify: number, cssminify: number
     // Normalize paths for the current OS
     const normalizedSource = path.normalize(source); // src
@@ -143,17 +125,11 @@ export const makeConvertCommand = (
 };
 
 // delete single file
-export const makeRemoveCommand = (
-    source: string,
-    target: string,
-    base: string
-) => {
+export const makeRemoveCommand = (source: string, target: string, base: string) => {
     const relativeSourcePath = source.replace(base, "").replace(".xml", ".js");
 
     // Normalize the path for the current OS
-    const normalizedRemoveTargetPath = path.normalize(
-        path.join(target, relativeSourcePath)
-    );
+    const normalizedRemoveTargetPath = path.normalize(path.join(target, relativeSourcePath));
 
     if (os.platform() === "win32") {
         return `del /s /q ${getWindowsPath(normalizedRemoveTargetPath)}`;
@@ -168,17 +144,11 @@ export const makeRemoveCommand = (
 // base   src/main/webapp/
 
 // delete all files
-export const makeRemoveAllCommand = (
-    source: string,
-    target: string,
-    base: string
-) => {
+export const makeRemoveAllCommand = (source: string, target: string, base: string) => {
     const relativeSourcePath = source.replace(base, "");
 
     // Normalize the path for the current OS
-    const normalizedRemoveTargetPath = path.normalize(
-        path.join(target, relativeSourcePath)
-    );
+    const normalizedRemoveTargetPath = path.normalize(path.join(target, relativeSourcePath));
     // remove websquare *.js(output) files only
     if (os.platform() === "win32") {
         return `del /s /q ${getWindowsPath(normalizedRemoveTargetPath)}\\*.js`;
@@ -187,27 +157,27 @@ export const makeRemoveAllCommand = (
     }
 };
 
-export const makeDeployCommand = (
-    source: string,
-    target: string,
-    base: string,
-    deployName: string
-) => {
-    const relativeSourcePath = source.replace(base, "").replace(".xml", ".js");
+export const makeDeployCommand = (source: string, target: string, base: string, deployName: string) => {
+    const relativeSourcePath = source;
 
     // Normalize paths for the current OS
-    const normalizedDeploySourcePath = path.normalize(
-        path.join(target, relativeSourcePath)
-    );
-    const normalizedDeployTargetPath = path.normalize(
-        path.join(base, "target", deployName, "_wpack_", relativeSourcePath)
-    );
+    const normalizedDeploySourcePath = path.normalize(path.join(target, relativeSourcePath));
+    const normalizedDeployTargetPath = path.normalize(path.join(base, "target", deployName, "_wpack_", relativeSourcePath));
 
     if (os.platform() === "win32") {
-        return `copy /y ${getWindowsPath(
-            normalizedDeploySourcePath
-        )} ${getWindowsPath(normalizedDeployTargetPath)}`;
+        return `copy /y ${getWindowsPath(normalizedDeploySourcePath)} ${getWindowsPath(normalizedDeployTargetPath)}`;
     } else {
         return `"cp -f '${normalizedDeploySourcePath}' '${normalizedDeployTargetPath}'"`;
+    }
+};
+
+export const makeCreateDirectoryCommand = (source: string, base: string, deployName: string) => {
+    const relativeSourcePath = path.dirname(source);
+    const normalizedTargetPath = path.normalize(path.join(base, "target", deployName, "_wpack_", relativeSourcePath));
+
+    if (os.platform() === "win32") {
+        return `if not exist "${getWindowsPath(normalizedTargetPath)}" mkdir "${getWindowsPath(normalizedTargetPath)}"`;
+    } else {
+        return `"mkdir -p '${normalizedTargetPath}'"`;
     }
 };

@@ -4,6 +4,13 @@ All notable changes to the "websquare" extension will be documented in this file
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.0.10]
+
+- Update copy(deploy) command generater.
+  - work tested on not worked windos OS.
+  - make directory command generator for deploy
+  - update "convert and deploy" commands for windows
+
 ## [0.0.9]
 
 - Update command generater.

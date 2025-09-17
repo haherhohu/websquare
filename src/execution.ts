@@ -10,6 +10,7 @@ import {
     wrapRemoveCommand,
     wrapRemoveAllCommand,
     wrapDeployCommand,
+    wrapCreateDirectoryCommand,
 } from "./utils";
 
 import { configurationManager } from "./configuration";
@@ -17,7 +18,7 @@ import path from "path";
 import { error } from "console";
 
 const outputChannel = configurationManager.getOutputChannel();
-const workspaceHome = configurationManager.getWorkspaceHome();
+const workspaceHome = path.join(configurationManager.getWorkspaceHome(), ""); // some windows path has slash end
 const base = configurationManager.getWebsquareBase(); // src/main/webapp/
 const target = path.join(base, "_wpack_/"); // src/main/webapp/_wpack_/
 const extensionHome = configurationManager.getExtensionHome();
@@ -29,11 +30,7 @@ export const setOutputChannel = (outputChannel: vscode.OutputChannel) => {
     outputChannel = outputChannel;
 };
 
-export const notificator = (
-    error: ExecException | null,
-    stdout: string | Buffer<ArrayBufferLike>,
-    stderr: string | Buffer<ArrayBufferLike>
-) => {
+export const notificator = (error: ExecException | null, stdout: string | Buffer<ArrayBufferLike>, stderr: string | Buffer<ArrayBufferLike>) => {
     if (error) {
         outputChannel.appendLine(`Error: ${error.message}`);
         return;
@@ -45,11 +42,7 @@ export const notificator = (
     outputChannel.appendLine(`stdout: ${stdout}`);
 };
 
-export const runCommandWithRealtimeOutput = (
-    command: string,
-    args: string[],
-    cwd: string
-) => {
+export const runCommandWithRealtimeOutput = (command: string, args: string[], cwd: string) => {
     return new Promise<void>((resolve, reject) => {
         if (os.platform() === "win32") {
             cwd = getWindowsPath(cwd); // Normalize the path for Windows
@@ -83,35 +76,22 @@ export const runCommandWithRealtimeOutput = (
 };
 
 // command shortcut
-export const runCommand = async (
-    commandMaker: Function,
-    args: string[],
-    cwd: string
-) => {
+export const runCommand = async (commandMaker: Function, args: string[], cwd: string) => {
     const terminal = selectTerminal();
     const cmd = commandMaker(args);
     outputChannel.appendLine(`Executing command: ${cmd}`);
-    await runCommandWithRealtimeOutput(
-        terminal.shell,
-        [terminal.opt, cmd],
-        cwd
-    );
+    await runCommandWithRealtimeOutput(terminal.shell, [terminal.opt, cmd], cwd);
 };
 
 export const checkDeployName = (deployName: string) => {
     if (!deployName) {
-        vscode.window.showErrorMessage(
-            "Please set the deployName in settings."
-        );
+        vscode.window.showErrorMessage("Please set the deployName in settings.");
         new Error("Error: Deploy name is not set.");
     }
 };
 
 // run websquare converter command
-export const runConverterWithProgress = (
-    websquareFilePath: string,
-    dodeploy: boolean = true
-) => {
+export const runConverterWithProgress = (websquareFilePath: string, dodeploy: boolean = true) => {
     const isSingleFile = websquareFilePath.endsWith(".xml");
 
     vscode.window.withProgress(
@@ -123,9 +103,7 @@ export const runConverterWithProgress = (
         async (progress) => {
             try {
                 if (isSingleFile) {
-                    outputChannel.appendLine(
-                        `Running converter for file: ${websquareFilePath}`
-                    );
+                    outputChannel.appendLine(`Running converter for file: ${websquareFilePath}`);
                 }
 
                 // source src/main/webapp/wq
@@ -134,28 +112,16 @@ export const runConverterWithProgress = (
                 // Clean target file
                 if (!isSingleFile) {
                     progress.report({ message: "Cleaning target files..." });
-                    await runCommand(
-                        wrapRemoveAllCommand,
-                        [websquareFilePath, target, base],
-                        extensionHome
-                    );
+                    await runCommand(wrapRemoveAllCommand, [websquareFilePath, target, base], extensionHome);
                 } else {
-                    await runCommand(
-                        wrapRemoveCommand,
-                        [websquareFilePath, target, base],
-                        extensionHome
-                    );
+                    await runCommand(wrapRemoveCommand, [websquareFilePath, target, base], extensionHome);
                 }
 
                 // Convert file
                 if (!isSingleFile) {
                     progress.report({ message: "Converting files..." });
                 }
-                await runCommand(
-                    wrapConvertCommand,
-                    [websquareFilePath, target, base],
-                    extensionHome
-                );
+                await runCommand(wrapConvertCommand, [websquareFilePath, target, base], extensionHome);
 
                 // Deploy file
                 if (dodeploy) {
@@ -163,26 +129,26 @@ export const runConverterWithProgress = (
                     if (!isSingleFile) {
                         progress.report({ message: "Deploying files..." });
                     }
+                    // send only relative path with file name
+                    // because workspace home(/) != base path (/src/main/webapp/)
+                    // then cannot remove all path before base
+                    await runCommand(wrapCreateDirectoryCommand, [websquareFilePath.replace(base, ""), target, workspaceHome], extensionHome);
                     await runCommand(
                         wrapDeployCommand,
-                        [websquareFilePath, target, workspaceHome, deployName],
+                        [websquareFilePath.replace(base, "").replace(".xml", ".js"), target, workspaceHome, deployName],
                         extensionHome
                     );
                 }
 
                 if (!isSingleFile) {
                     progress.report({ message: "Process complete!" });
-                    vscode.window.showInformationMessage(
-                        "Websquare conversion process completed successfully!"
-                    );
+                    vscode.window.showInformationMessage("Websquare conversion process completed successfully!");
                 } else {
                     vscode.window.showInformationMessage("Process complete!");
                 }
             } catch (error) {
                 outputChannel.appendLine(`Error: ${error}`);
-                vscode.window.showErrorMessage(
-                    "Some error occurred during the conversion process."
-                );
+                vscode.window.showErrorMessage("Some error occurred during the conversion process.");
             }
         }
     );
