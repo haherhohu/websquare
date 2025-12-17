@@ -7,14 +7,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [0.0.10]
 
 - Update copy(deploy) command generater.
-  - work tested on not worked windos OS.
+  - work tested on not worked windows OS.
   - make directory command generator for deploy
   - update "convert and deploy" commands for windows
 
 ## [0.0.9]
 
 - Update command generater.
-  - work tested on not worked windos OS.
+  - work tested on not worked windows OS.
   - change windows command path starts from "c:" to "C:"
 
 ## [0.0.8]
